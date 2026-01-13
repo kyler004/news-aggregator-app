@@ -1,4 +1,4 @@
-export const sources = [
+export const sourcesData = [
   { id: "global", name: "Global News Feed", enabled: true },
   { id: "techcrunch", name: "TechCrunch", enabled: true },
   { id: "bbc", name: "BBC News", enabled: true },
@@ -6,15 +6,15 @@ export const sources = [
   { id: "aljazeera", name: "Al Jazeera", enabled: true },
 ];
 
-export const articles = [
+export const articlesData = [
   {
     id: "1",
     source: "The Verge",
-    sourceIcon: "🔺",
+    sourceIcon: "Triangle",
     title: "Tesla's New Battery Tech Promises 500-Mile Range",
     description: "Elect Tesla's new battery tech Promises 500-Mile Range.",
     image:
-      "https://images.unsplash.com/photo--1593941707882-a5bba14938c7?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1617704548623-340376564e68?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "TECH",
     timestamp: "2h ago",
     url: "#",
@@ -22,7 +22,7 @@ export const articles = [
   {
     id: "2",
     source: "UN Climate",
-    sourceIcon: "🌍",
+    sourceIcon: "Globe",
     title: "UN Climate Change Conference Reaches Historic Agreement",
     description: "UN Climate Change Conference Reaches Historic Agreement.",
     image:
@@ -34,11 +34,11 @@ export const articles = [
   {
     id: "3",
     source: "Apple",
-    sourceIcon: "🍎",
+    sourceIcon: "Smartphone",
     title: "Apple Announces Revolutionary AR Glasses",
     description: "Apple Announces revolutionary AR Glasses.",
     image:
-      "https://images.unsplash.com/photo-1592286927505-2fd0f8fc5fcc?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "TECH",
     timestamp: "2h ago",
     url: "#",
@@ -46,7 +46,7 @@ export const articles = [
   {
     id: "4",
     source: "The Verge",
-    sourceIcon: "🔺",
+    sourceIcon: "Triangle",
     title: "US Ehamas Inver Planets in ðMillions",
     description:
       "A percent of paora grown batteriek combination and economic liranoyees on tre...",
@@ -59,7 +59,7 @@ export const articles = [
   {
     id: "5",
     source: "The Verge",
-    sourceIcon: "🔺",
+    sourceIcon: "Triangle",
     title: "UN Climate Change Conference Reaches",
     description:
       "Amoulttrate Politic Change Conference reaches into producant historlo agreement...",
@@ -72,7 +72,7 @@ export const articles = [
   {
     id: "6",
     source: "Amites",
-    sourceIcon: "📰",
+    sourceIcon: "Newspaper",
     title: "Apple's Itura is Real Entire Cononanse",
     description:
       "Soluenrad connections deciiring to unit to llear that new data, collect impection...",
