@@ -1,73 +1,59 @@
-# React + TypeScript + Vite
+# NEXUS NEWS Aggregator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+NEXUS NEWS is a modern, high-performance news aggregator built with React 19, TypeScript, and Tailwind CSS 4.0. It provides a sleek, dark-themed interface for staying updated with the latest headlines across technology, politics, and global affairs.
 
-Currently, two official plugins are available:
+![NEXUS NEWS Header](https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=1170&auto=format&fit=crop)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## React Compiler
+- **Multi-Source Aggregation**: Centralized feed from diverse publishers including The Verge, Apple News, BBC, and UN Climate.
+- **Dynamic View Modes**: Toggle between a dense **List** view for quick scanning and a visual **Grid** view for media-rich browsing.
+- **Advanced Filtering**: Filter news by date range, specific topics, and even sentiment analysis (Coming Soon).
+- **Instant Search**: Real-time filtering of articles based on titles and descriptions.
+- **Sleek UI/UX**: Built with a "dark mode first" approach, utilizing glassmorphism effects and the latest Tailwind CSS 4.0 features.
+- **Lucide Icons**: Crisp, professional iconography powered by `lucide-react`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠️ Tech Stack
 
-## Expanding the ESLint configuration
+- **Framework**: [React 19](https://react.dev/)
+- **Bundler**: [Vite 7](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS 4.0](https://tailwindcss.com/)
+- **Programming Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Icons**: [Lucide React](https://lucide.dev/)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 📦 Getting Started
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Prerequisites
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Node.js (Latest LTS recommended)
+- npm or yarn
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Installation
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+1. Clone the repository:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+   ```bash
+   git clone <repository-url>
+   ```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+## 🏗️ Project Structure
+
+- `src/components/`: Reusable UI components (`Header`, `Sidebar`, `ArticleCard`).
+- `src/data/`: Mock data and source configurations.
+- `src/App.tsx`: Main application shell and state management.
+- `src/index.css`: Tailwind CSS global styles and design system.
+
+## 📄 License
+
+This project is open-source and available under the MIT License.
