@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import ArticleCard from "./components/ArticleCard";
-import { sourcesData } from "./data";
+import { categoriesData } from "./data";
 
 interface NewsArticle {
   id: string;
@@ -16,12 +16,6 @@ interface NewsArticle {
   url: string;
 }
 
-interface NewsSource {
-  id: string;
-  name: string;
-  enabled: boolean;
-}
-
 type ViewMode = "grid" | "list";
 type SortOption = "latest" | "popular" | "relevance";
 type Theme = "light" | "dark";
@@ -32,89 +26,108 @@ const App: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("latest");
-  const [selectedTopic] = useState("Technology");
-  const [showSourcesDropdown, setShowSourcesDropdown] = useState(false);
-  const [showTopicDropdown, setShowTopicDropdown] = useState(false);
-  const [showSortDropdown, setShowSortDropdown] = useState(false);
-  const [sources, setSources] = useState<NewsSource[]>(sourcesData);
+  const [selectedCategory, setSelectedCategory] = useState("top");
+  const [showTopicDropdown, setShowTopicDropdown] = useState(true);
+  const [showSortDropdown, setShowSortDropdown] = useState(true);
   
   // Dynamic API state
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [nextPage, setNextPage] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchNews = async () => {
+  const fetchNews = async (pageToken?: string) => {
+    if (pageToken) {
+      setIsFetchingMore(true);
+    } else {
       setIsLoading(true);
-      setError(null);
+    }
+    setError(null);
+    
+    try {
+      const apiKey = import.meta.env.VITE_NEWSDATA_API_KEY;
       
-      try {
-        const queryUrl = searchQuery 
-          ? `https://hn.algolia.com/api/v1/search?query=${encodeURIComponent(searchQuery)}`
-          : `https://hn.algolia.com/api/v1/search?tags=front_page`;
-          
-        const response = await fetch(queryUrl);
+      let queryUrl = `https://newsdata.io/api/1/news?apikey=${apiKey}&language=en`;
+      
+      if (searchQuery) {
+        queryUrl += `&q=${encodeURIComponent(searchQuery)}`;
+      } else {
+        queryUrl += `&category=${selectedCategory}`;
+      }
+
+      if (pageToken) {
+        queryUrl += `&page=${pageToken}`;
+      }
+        
+      const response = await fetch(queryUrl);
         if (!response.ok) {
           throw new Error('Failed to fetch news');
         }
         
-        const data = await response.json();
+      const data = await response.json();
 
-        interface HackerNewsHit {
-          objectID: string;
-          author: string;
+      if (data.status === "error") {
+          throw new Error(data.results?.message || 'Failed to fetch news');
+      }
+
+      // Track next page token
+      setNextPage(data.nextPage || null);
+
+        interface NewsDataArticle {
+          article_id: string;
+          creator: string[] | null;
           title: string;
-          story_text: string | null;
-          points: number;
-          num_comments: number;
-          created_at: string;
-          url: string;
+          description: string | null;
+          source_id: string;
+          source_icon: string | null;
+          image_url: string | null;
+          category: string[] | null;
+          pubDate: string;
+          link: string;
         }
         
-        const fetchedArticles: NewsArticle[] = data.hits
-          .filter((hit: HackerNewsHit) => hit.title && hit.url) // Only show hits with title and URL
-          .map((hit: HackerNewsHit) => ({
-            id: hit.objectID,
-            source: hit.author || "Global News Feed",
-            sourceIcon: "Globe", // Default icon
-            title: hit.title,
-            description: (hit.story_text ? hit.story_text.substring(0, 100) + '...' : `Points: ${hit.points} | Comments: ${hit.num_comments}`),
-            image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=1170",
-            category: "TECH",
-            timestamp: new Date(hit.created_at).toLocaleDateString(),
-            url: hit.url
-          }));
-          
-        setArticles(fetchedArticles);
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError('An error occurred fetching the news.');
-        }
-      } finally {
-        setIsLoading(false);
+      const newArticles: NewsArticle[] = (data.results || [])
+        .filter((hit: NewsDataArticle) => hit.title && hit.link) // Only show hits with title and URL
+        .map((hit: NewsDataArticle) => ({
+          id: hit.article_id,
+          source: hit.creator?.[0] || hit.source_id || "Global News Feed",
+          sourceIcon: hit.source_icon ? "Globe" : "Newspaper", // Generic mapping
+          title: hit.title,
+          description: hit.description ? hit.description.substring(0, 150) + '...' : 'No description available.',
+          image: hit.image_url || "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=1170",
+          category: hit.category?.[0]?.toUpperCase() || selectedCategory.toUpperCase(),
+          timestamp: new Date(hit.pubDate).toLocaleDateString(),
+          url: hit.link
+        }));
+        
+      if (pageToken) {
+        setArticles(prev => [...prev, ...newArticles]);
+      } else {
+        setArticles(newArticles);
       }
-    };
-
-    fetchNews();
-  }, [searchQuery]); // Re-fetch when searchQuery changes
-
-  const toggleSource = (sourceId: string) => {
-    setSources(
-      sources.map((source: NewsSource) =>
-        source.id === sourceId
-          ? { ...source, enabled: !source.enabled }
-          : source
-      )
-    );
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An error occurred fetching the news.');
+      }
+    } finally {
+      setIsLoading(false);
+      setIsFetchingMore(false);
+    }
   };
 
-  const filteredArticles = articles.filter(
-    (article: NewsArticle) =>
-      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    // Re-fetch from page 1 when searchQuery or category changes
+    fetchNews();
+  }, [searchQuery, selectedCategory]);
+
+  const loadMore = () => {
+    if (nextPage && !isFetchingMore) {
+      fetchNews(nextPage);
+    }
+  };
 
   return (
     <div className={theme}>
@@ -130,11 +143,9 @@ const App: React.FC = () => {
 
         <div className="flex flex-1 overflow-hidden w-full max-w-full mx-auto">
           <Sidebar
-            sources={sources}
-            toggleSource={toggleSource}
-            showSourcesDropdown={showSourcesDropdown}
-            setShowSourcesDropdown={setShowSourcesDropdown}
-            selectedTopic={selectedTopic}
+            categories={categoriesData}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
             showTopicDropdown={showTopicDropdown}
             setShowTopicDropdown={setShowTopicDropdown}
             sortBy={sortBy}
@@ -153,8 +164,8 @@ const App: React.FC = () => {
               <div className="flex justify-center items-center h-64 text-red-500">
                 <p>{error}</p>
               </div>
-            ) : filteredArticles.length === 0 ? (
-              <div className="flex justify-center items-center h-64 text-slate-500 dark:text-slate-400">
+            ) : articles.length === 0 ? (
+                          <div className="flex justify-center items-center h-64 text-slate-500 dark:text-slate-400">
                 <p>No articles found.</p>
               </div>
             ) : (
@@ -165,13 +176,33 @@ const App: React.FC = () => {
                     : "space-y-4"
                 }
               >
-                {filteredArticles.map((article: NewsArticle) => (
+                {articles.map((article: NewsArticle) => (
                   <ArticleCard
                     key={article.id}
                     article={article}
                     viewMode={viewMode}
                   />
                 ))}
+              </div>
+            )}
+            
+            {/* Load More Button */}
+            {!isLoading && !error && articles.length > 0 && nextPage && (
+              <div className="mt-8 mb-4 flex justify-center">
+                <button 
+                  onClick={loadMore}
+                  disabled={isFetchingMore}
+                  className="bg-cyan-500 hover:bg-cyan-600 dark:bg-cyan-600 dark:hover:bg-cyan-500 text-white px-8 py-3 rounded-full font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center shadow-lg"
+                >
+                  {isFetchingMore ? (
+                    <>
+                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                       Loading...
+                    </>
+                  ) : (
+                    "Load More Articles"
+                  )}
+                </button>
               </div>
             )}
           </main>
