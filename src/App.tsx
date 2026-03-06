@@ -24,9 +24,11 @@ interface NewsSource {
 
 type ViewMode = "grid" | "list";
 type SortOption = "latest" | "popular" | "relevance";
+type Theme = "light" | "dark";
 
 const App: React.FC = () => {
   //State variables
+  const [theme, setTheme] = useState<Theme>("dark");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("latest");
@@ -115,61 +117,65 @@ const App: React.FC = () => {
   );
 
   return (
-    <div className="h-screen flex flex-col bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
-      <Header
-        viewMode={viewMode}
-        setViewMode={setViewMode}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-      />
-
-      <div className="flex flex-1 overflow-hidden w-full max-w-full mx-auto">
-        <Sidebar
-          sources={sources}
-          toggleSource={toggleSource}
-          showSourcesDropdown={showSourcesDropdown}
-          setShowSourcesDropdown={setShowSourcesDropdown}
-          selectedTopic={selectedTopic}
-          showTopicDropdown={showTopicDropdown}
-          setShowTopicDropdown={setShowTopicDropdown}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          showSortDropdown={showSortDropdown}
-          setShowSortDropdown={setShowSortDropdown}
+    <div className={theme}>
+      <div className="h-screen flex flex-col bg-slate-50 text-slate-900 transition-colors duration-200 dark:bg-slate-900 dark:text-slate-100 overflow-hidden">
+        <Header
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          theme={theme}
+          setTheme={setTheme}
         />
 
-        {/* Main Content */}
-        <main className="flex-1 p-6 overflow-y-auto">
-          {isLoading ? (
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500"></div>
-            </div>
-          ) : error ? (
-            <div className="flex justify-center items-center h-64 text-red-500">
-              <p>{error}</p>
-            </div>
-          ) : filteredArticles.length === 0 ? (
-            <div className="flex justify-center items-center h-64 text-slate-400">
-              <p>No articles found.</p>
-            </div>
-          ) : (
-            <div
-              className={
-                viewMode === "grid"
-                  ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                  : "space-y-4"
-              }
-            >
-              {filteredArticles.map((article: NewsArticle) => (
-                <ArticleCard
-                  key={article.id}
-                  article={article}
-                  viewMode={viewMode}
-                />
-              ))}
-            </div>
-          )}
-        </main>
+        <div className="flex flex-1 overflow-hidden w-full max-w-full mx-auto">
+          <Sidebar
+            sources={sources}
+            toggleSource={toggleSource}
+            showSourcesDropdown={showSourcesDropdown}
+            setShowSourcesDropdown={setShowSourcesDropdown}
+            selectedTopic={selectedTopic}
+            showTopicDropdown={showTopicDropdown}
+            setShowTopicDropdown={setShowTopicDropdown}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            showSortDropdown={showSortDropdown}
+            setShowSortDropdown={setShowSortDropdown}
+          />
+
+          {/* Main Content */}
+          <main className="flex-1 p-6 overflow-y-auto custom-scrollbar">
+            {isLoading ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500"></div>
+              </div>
+            ) : error ? (
+              <div className="flex justify-center items-center h-64 text-red-500">
+                <p>{error}</p>
+              </div>
+            ) : filteredArticles.length === 0 ? (
+              <div className="flex justify-center items-center h-64 text-slate-500 dark:text-slate-400">
+                <p>No articles found.</p>
+              </div>
+            ) : (
+              <div
+                className={
+                  viewMode === "grid"
+                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                    : "space-y-4"
+                }
+              >
+                {filteredArticles.map((article: NewsArticle) => (
+                  <ArticleCard
+                    key={article.id}
+                    article={article}
+                    viewMode={viewMode}
+                  />
+                ))}
+              </div>
+            )}
+          </main>
+        </div>
       </div>
     </div>
   );
