@@ -69,7 +69,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, viewMode }) => {
         <p className="text-slate-600 dark:text-slate-400 text-sm mb-4 line-clamp-2 transition-colors duration-200">
           {article.description}
         </p>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mt-4 border-t border-slate-100 dark:border-slate-700/50 pt-4">
           <div className="flex items-center space-x-3">
             <button className="text-slate-400 hover:text-cyan-500 transition-colors">
               <Clock className="w-4 h-4" />
@@ -81,9 +81,15 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, viewMode }) => {
               <Bookmark className="w-4 h-4" />
             </button>
           </div>
-          <span className="text-xs bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded">
-            {article.category}
-          </span>
+          <a
+            href={article.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-medium text-cyan-500 hover:text-cyan-600 dark:text-cyan-400 dark:hover:text-cyan-300 transition-colors duration-200 flex items-center group gap-1"
+          >
+            Read Article
+            <span className="transform transition-transform group-hover:translate-x-1">→</span>
+          </a>
         </div>
       </div>
     </article>
